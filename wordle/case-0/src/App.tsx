@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useState} from "react";
+import {KeyboardEvent, useCallback, useState} from "react";
 
 function App() {
   const answer = "RIGHT";
@@ -10,13 +10,21 @@ function App() {
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      //alert("hola");
+      //console.log("Key down: " + event.key);
       switch (event.key) {
         case "Enter": {
           if (words[turn].join("") === answer) {
             setStatus("finished");
+
+            return;
           }
 
-          setTurn((turn) => turn + 1);
+          const filledLetters = words[turn].filter((letter) => letter !== "");
+
+          if (filledLetters.length === words[turn].length) {
+            setTurn((turn) => turn + 1);
+          }
 
           return;
         }
@@ -40,6 +48,9 @@ function App() {
             if (firstEmptyIndex === -1) return;
 
             words[turn][firstEmptyIndex] = event.key.toUpperCase();
+            if (firstEmptyIndex === words[turn].length) {
+              setTurn(turn + 1);
+            }
 
             setWords(words.slice());
 
@@ -52,26 +63,31 @@ function App() {
   );
 
   return (
-    <main className="board">
-      {words.map((word, wordIndex) => (
-        <section className="word">
-          {word.map((letter, letterIndex) => {
-            const isCorrect = false;
-            const isPresent =
-              letter &&
-              wordIndex < turn &&
-              letter !== answer[letterIndex] &&
-              answer.includes(letter);
+    <>
+      <main className="board" tabIndex={-1} onKeyDown={(e) => handleKeyDown(e)}>
+        {words.map((word, wordIndex) => (
+          <section key={wordIndex} className="word">
+            {word.map((letter, letterIndex) => {
+              const isCorrect = answer.charAt(letterIndex) === letter.toUpperCase();
+              const isPresent =
+                letter &&
+                wordIndex < turn &&
+                letter !== answer[letterIndex] &&
+                answer.includes(letter);
 
-            return (
-              <article className={`letter ${isPresent && "present"} ${isCorrect && "correct"}`}>
-                {letter}
-              </article>
-            );
-          })}
-        </section>
-      ))}
-    </main>
+              return (
+                <article
+                  key={letterIndex}
+                  className={`letter ${isPresent && "present"} ${isCorrect && "correct"}`}
+                >
+                  {letter}
+                </article>
+              );
+            })}
+          </section>
+        ))}
+      </main>
+    </>
   );
 }
 
