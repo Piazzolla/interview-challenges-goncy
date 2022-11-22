@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "react": "^18.0.0",
+    "react-confetti": "^6.1.0",
     "react-dom": "^18.0.0",
+    "react-tsparticles": "^2.5.3",
     "sass": "^1.42.1"
   },
   "devDependencies": {
